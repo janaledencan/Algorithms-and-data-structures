@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Maximum stack size
+#define MAX_SIZE 100
+
+struct cvor{ char x; struct cvor *left, *right; }; //Deklaracija strukture
+struct Stack
+	{
+		int size;
+		int top;
+		struct cvor* *array;
+	};
+//struct cvor{ char x; struct cvor *left, *right; }; //Deklaracija strukture
+	void ubaci(struct cvor *r, struct cvor *p){
+	if ((r->right == NULL) && (p->x > r->x)){ r->right = p; }
+	//Funkcija za dodavanje èvora u stablo
+	else if ((r->right != NULL) && (p->x > r->x)){ ubaci(r->right, p); }
+	//Sluèaj kada je vrijednost novog èvora veæa od nadreðenog.
+		//Sluèaj kada je vrijednost novog èvora veæa od nadreðenog.
+		if ((r->left == NULL) && (p->x < r->x)){ r->left = p; }
+	//Sluèaj kada je vrijednost novog èvora manja od nadreðenog.
+		else if ((r->left != NULL) && (p->x < r->x)){ ubaci(r->left, p); }
+	//Sluèaj kada je vrijednost novog èvora manja od nadreðenog.
+} //zavrsetak funkcije ubaci()
+
+	int isFull(struct Stack* stack)
+	{
+		return stack->top - 1 == stack->size;
+	}
+	
+	int isEmpty(struct Stack* stack)
+	{
+		return stack->top == -1;
+	}
+	
+	void push(struct Stack* stack, struct cvor* node)
+	{
+		if (isFull(stack))
+			return;
+		stack->array[++stack->top] = node;
+	}
+	
+	struct cvor* pop(struct Stack* stack)
+	{
+		if (isEmpty(stack))
+			return NULL;
+		return stack->array[stack->top--];
+	}
+	
+	struct cvor* peek(struct Stack* stack)
+	{
+		if (isEmpty(stack))
+			return NULL;
+		return stack->array[stack->top];
+	}
+	
+	struct Stack* createStack(int size)
+	{
+		struct Stack* stack = (struct Stack*) malloc(sizeof(struct Stack));
+		stack->size = size;
+		stack->top = -1;
+		stack->array = (struct cvor**) malloc(stack->size * sizeof(struct cvor*));
+		return stack;
+	}
+
+	void preOrder(struct cvor* root){ if (root == NULL) return;   else{ printf("%c ", root->x);   preOrder(root->left);   preOrder(root->right); } }
+
+
+	void inOrder(struct cvor* root){ if (root == NULL) return;   else{ inOrder(root->left);   printf("%c ", root->x);   inOrder(root->right); } }
+
+
+	void postOrderIterative(struct cvor* root)
+		{
+			// Check for empty tree
+			if (root == NULL)
+				return;
+		
+			struct Stack* stack = createStack(MAX_SIZE);
+			do
+			{
+				// Move to leftmost node
+				while (root)
+				{
+					// Push root's right child and then root to stack.
+					if (root->right)
+						push(stack, root->right);
+					push(stack, root);
+		
+					// Set root as root's left child  
+					root = root->left;
+				}
+		
+				// Pop an item from stack and set it as root    
+				root = pop(stack);
+		
+				// If the popped item has a right child and the right child is not
+				// processed yet, then make sure right child is processed before root
+				if (root->right && peek(stack) == root->right)
+				{
+					pop(stack);  // remove right child from stack
+					push(stack, root);  // push root back to stack
+					root = root->right; // change root so that the right 
+					// child is processed next
+				}
+				else  // Else print root's data and set root as NULL
+				{
+					printf("%c ", root->x);
+					root = NULL;
+				}
+			} while (!isEmpty(stack));
+		}
+
+
+
+
+	struct cvor* newNode(char data)
+		{
+			struct cvor* node = (struct cvor*) malloc(sizeof(struct cvor));
+			node->x = data;
+			node->left = node->right = NULL;
+			return node;
+		}
+
+	int main()
+	{
+		
+		struct cvor* root = NULL;
+		root = newNode('i');
+		struct cvor* slovo2 = newNode('m');
+		struct cvor* slovo3 = newNode('e');
+		struct cvor* slovo4 = newNode('p');
+		struct cvor* slovo5 = newNode('r');
+		struct cvor* slovo6 = newNode('e');
+		struct cvor* slovo7 = newNode('z');
+		struct cvor* slovo8 = newNode('i');
+		struct cvor* slovo9 = newNode('m');
+		struct cvor* slovo10 = newNode('e');
+
+		ubaci(root, slovo2);
+		ubaci(root, slovo3);
+		ubaci(root, slovo4);
+		ubaci(root, slovo5);
+		ubaci(root, slovo6);
+		ubaci(root, slovo7);
+		ubaci(root, slovo8);
+		ubaci(root, slovo9);
+		ubaci(root, slovo10);
+
+                printf("preOrder jest:\n"); 
+		preOrder(root);
+                printf("\ninOrder jest:\n");
+		inOrder(root);
+                printf("\npostOrder jest:\n");
+		postOrderIterative(root);
+		
+	
+	
+		return 0;
+	}
+
+
+
+
+
